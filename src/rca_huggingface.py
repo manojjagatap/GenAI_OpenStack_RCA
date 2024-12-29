@@ -156,7 +156,7 @@ print (response)
 
 
 
-def ragFunction(question):
+def ragFunction_hf(question):
 
   QA_PROMPT = PromptTemplate(input_variables=["context", "question"],template=template,)
   rag_chain= {"context":RunnablePassthrough(context= lambda x:x["question"] | retriever),

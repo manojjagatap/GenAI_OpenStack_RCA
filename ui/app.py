@@ -2,11 +2,19 @@ import gradio as gr
 import requests
 
 
+#Manoj: Importing the rag functions
+from src.rca_huggingface import ragFunction_hf
+
 # Define the endpoint URL
 API_URL = "http://localhost:8000"
 PREDICT_ENDPOINT = f"{API_URL}/predict"
 RCA_ENDPOINT = f"{API_URL}/root_cause_analysis"
 RCA_GENERATION = f"{API_URL}/root_cause_generate"
+
+#Manoj- adding the Ananmoly endpoint 
+ANAMOLY_ENDPOINT = f"{API_URL}/anamolydetect"
+RCA_HF_ENDPOINT = f"{API_URL}/rca_hf"
+RCA_OPENAI_ENDPOINT = f"{API_URL}/rca_openai"
 
 def predict(log):
     # Send a POST request to the FastAPI endpoint
@@ -37,6 +45,31 @@ def root_cause_generation(logs):
         return result or "No anomalies detected."
     return f"Error: {response.status_code} - {response.text}"
 
+"""
+def rca_hf(logs):
+    print(logs)
+    log_list = logs.splitlines()
+    print("Sending to API:", {"logs": log_list})
+    response = requests.post(RCA_HF_ENDPOINT, json={"logs": log_list})
+    if response.status_code == 200:
+        data = response.json()
+        anomalies = data["anomalies"]
+        root_causes = data["root_causes"]
+        return f"Anomalies: {anomalies}\nRoot Causes: {root_causes}"
+    return "Error: Unable to connect to the RCA service."
+    """
+
+def rca_hf(logs):
+    print("Sending to API:", {"logs": logs})
+    #response = ragFunction_hf(logs)
+    response = "Manoj Jagatap"
+    return response
+
+
+
+
+
+
 # Define the Gradio interface
 interface = gr.TabbedInterface(
     [
@@ -61,8 +94,17 @@ interface = gr.TabbedInterface(
             title="Issue Explainer",
             description="Detect anomalies in logs and explain root causes."
         ), 
+
+        gr.Interface(
+            fn=rca_hf,
+            inputs=gr.Textbox(lines=1, placeholder="Paste logs here..."),
+            outputs="text",
+            title="Root Cause Analysis with Hugging face model",
+            description="Detect anomalies in logs and explain root causes."
+        ),
+
     ],
-    tab_names=["Anomaly Detection", "Root Cause Analysis",  "Issue Explainer"]
+    tab_names=["Anomaly Detection", "Root Cause Analysis",  "Issue Explainer", "Root Cause Analysis with HF"]
 )
 if __name__ == "__main__":
     #interface.launch(share=True)

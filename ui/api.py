@@ -30,6 +30,11 @@ class RCAResponse(BaseModel):
     anomalies: List[int]
     root_causes: Dict[int, str]
 
+
+class RCAHFResponse(BaseModel):
+    anomalies: str
+    
+
 # Endpoints
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(request: LogRequest):
@@ -59,3 +64,11 @@ async def root_cause_analysis(request: LogsRequest):
 async def validation_exception_handler(request, exc):
     logger.error(f"Validation Error: {exc}")
     return JSONResponse(status_code=422, content={"message": str(exc)})
+
+#Manoj: Adding the functions for Hugging face endpoint
+
+@app.post("/rca_hf", response_model=RCAHFResponse)
+async def root_cause_analysis(str: LogsRequest):
+    print("Received logs:", LogsRequest)
+    return RCAResponse("Manoj")
+    
